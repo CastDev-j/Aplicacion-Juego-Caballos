@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrera de Caballos</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: auto;
+        }
+
+        #controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        #race-track {
+            width: 80%;
+            margin: 0 auto;
+            border: 1px solid rgb(207, 197, 197);
+            position: relative;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .finish-line {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 2px;
+            height: 100%;
+            background-color: red;
+        }
+
+        .horse {
+            position: absolute;
+            left: 0;
+            display: flex;
+            align-items: center;
+            transition: left 0s linear;
+        }
+
+        .horse img {
+            width: 50px;
+            height: auto;
+            margin-right: 10px;
+        }
+
+        #number-of-horses {
+            width: 100px;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .horse {
+            position: absolute;
+            left: 0;
+            display: flex;
+            align-items: center;
+            transition: left 0s linear;
+            background-color: #c3e6cb; /* Light green color */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div id="controls" class="d-flex justify-content-center">
+                            <button id="start-race" class="btn btn-primary">Comenzar</button>
+                            <input type="number" id="number-of-horses" placeholder="Cantidad de Caballos" min="1" value="5" class="form-control mx-2">
+                            <button id="reset-race" class="btn btn-secondary">Reiniciar</button>
+                        </div>
+                        <div id="race-track" class="mt-4">
+                            <div class="finish-line"></div>
+                            <!-- Caballos serán generados aquí -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const raceTrack = document.getElementById('race-track');
+            const startButton = document.getElementById('start-race');
+            const resetButton = document.getElementById('reset-race');
+            const numberOfHorsesInput = document.getElementById('number-of-horses');
+            let raceFinished = false;
+
+            function createHorses(number) {
+                raceTrack.innerHTML = '<div class="finish-line"></div>';
+                const horseHeight = 60;
+                raceTrack.style.height = `${number * horseHeight}px`;
+                for (let i = 1; i <= number; i++) {
+                    const horse = document.createElement('div');
+                    horse.className = 'horse';
+                    horse.style.top = `${(i - 1) * horseHeight}px`;
+                    horse.innerHTML = `${i}<img src="./caballo.png" alt="Caballo ${i}">`;
+                    raceTrack.appendChild(horse);
+                }
+            }
+
+            function startRace() {
+                raceFinished = false;
+                const horses = document.querySelectorAll('.horse');
+                horses.forEach(horse => {
+                    const randomSpeed = Math.random() * 10 + 10; // Velocidad aleatoria entre 10 y 20 segundos
+                    const randomBezier = `cubic-bezier(${Math.random()}, ${Math.random()}, ${Math.random()}, ${Math.random()})`;
+                    horse.style.transition = `left ${randomSpeed}s ${randomBezier}`;
+                    horse.style.left = `calc(100% - 60px)`; // Ajuste para que los caballos no se salgan de la pista
+                });
+
+                horses.forEach(horse => {
+                    horse.addEventListener('transitionend', () => {
+                        if (!raceFinished) {
+                            raceFinished = true;
+                            horse.style.backgroundColor = 'green';
+                            horses.forEach(otherHorse => {
+                                if (otherHorse !== horse) {
+                                    otherHorse.style.backgroundColor = 'red';
+                                }
+                            });
+                        }
+                    });
+                });
+            }
+
+            function resetRace() {
+                createHorses(numberOfHorsesInput.value);
+            }
+
+            numberOfHorsesInput.addEventListener('change', () => {
+                createHorses(numberOfHorsesInput.value);
+            });
+
+            startButton.addEventListener('click', () => {
+                startRace();
+            });
+
+            resetButton.addEventListener('click', () => {
+                resetRace();
+            });
+
+            createHorses(numberOfHorsesInput.value); // Inicializa los caballos al cargar la página
+        });
+    </script>
+</body>
+</html>
