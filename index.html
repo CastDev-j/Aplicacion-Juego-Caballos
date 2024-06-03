@@ -136,6 +136,7 @@
                         if (!raceFinished) {
                             raceFinished = true;
                             horse.style.backgroundColor = 'green';
+                            alert(`El caballo ${horse.innerText} ha ganado la carrera!`);
                             horses.forEach(otherHorse => {
                                 if (otherHorse !== horse) {
                                     otherHorse.style.backgroundColor = 'red';
